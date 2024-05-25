@@ -3,6 +3,7 @@ Tic Tac Toe Player
 """
 
 import math
+import copy
 
 X = "X"
 O = "O"
@@ -55,9 +56,8 @@ def result(board, action):
     Returns the board that results from making move (i, j) on the board.
     """
 
-    copy_board = board[:]
-    i, j = action
-    copy_board[i][j] = player(copy_board)
+    copy_board = copy.deepcopy(board)
+    copy_board[action[0]][action[1]] = player(copy_board)
     return copy_board
 
 
@@ -137,63 +137,47 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    
-    if terminal(board) == True:
+    if terminal(board):
         return None
-    
+    Max = float("-inf")
+    Min = float("inf")
+
     if player(board) == X:
-        uvalue,move = max_v(board)
-        return move
-       
-    if player(board) == O:      
-        uvalue,move = min_v(board)
-        return move
-    
+        return Max_Value(board, Max, Min)[1]
     else:
-        return 2
+        return Min_Value(board, Max, Min)[1]
     
 
-def max_v(board):
-
-    if terminal(board) == True:
-        return utility(board),None
-    
+def Max_Value(board, Max, Min):
+    move = None
+    if terminal(board):
+        return [utility(board), None]
     v = float('-inf')
-    act = None
-
     for action in actions(board):
-
-        tempv,tempact = min_v(result(board,action))
-
-        if tempv > v:
-            v = tempv
-            act = tempact
-        
-        if v == 1:
-            return v,act
-        
-    return v,act
+        test = Min_Value(result(board, action), Max, Min)[0]
+        Max = max(Max, test)
+        if test > v:
+            v = test
+            move = action
+        if Max >= Min:
+            break
+    return [v, move]
 
 
-def min_v(board):
-
-    if terminal(board) == True:
-        return utility(board),None
+def Min_Value(board, Max, Min):
+    move = None
+    if terminal(board):
+        return [utility(board), None]
     v = float('inf')
-    act = None
-
     for action in actions(board):
-
-        tempv,tempact = min_v(result(board,action))
-
-        if tempv < v:
-            v = tempv
-            act = tempact
-        
-        if v == -1:
-            return v,act
-        
-    return v,act
+        test = Max_Value(result(board, action), Max, Min)[0]
+        Min = min(Min, test)
+        if test < v:
+            v = test
+            move = action
+        if Max >= Min:
+            break
+    return [v, move]
     
 
 
