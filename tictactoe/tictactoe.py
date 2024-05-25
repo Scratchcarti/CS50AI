@@ -54,8 +54,6 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    if action not in actions(board):
-        raise Exception("Sorry, invalid action")
 
     copy_board = board[:]
     i, j = action
@@ -139,4 +137,69 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    print("slime you out")
+    
+    if terminal(board) == True:
+        return None
+    
+    if player(board) == X:
+        uvalue,move = max_v(board)
+        return move
+       
+    if player(board) == O:      
+        uvalue,move = min_v(board)
+        return move
+    
+    else:
+        return 2
+    
+
+def max_v(board):
+
+    if terminal(board) == True:
+        return utility(board),None
+    
+    v = float('-inf')
+    act = None
+
+    for action in actions(board):
+
+        tempv,tempact = min_v(result(board,action))
+
+        if tempv > v:
+            v = tempv
+            act = tempact
+        
+        if v == 1:
+            return v,act
+        
+    return v,act
+
+
+def min_v(board):
+
+    if terminal(board) == True:
+        return utility(board),None
+    v = float('inf')
+    act = None
+
+    for action in actions(board):
+
+        tempv,tempact = min_v(result(board,action))
+
+        if tempv < v:
+            v = tempv
+            act = tempact
+        
+        if v == -1:
+            return v,act
+        
+    return v,act
+    
+
+
+
+
+
+
+
+
